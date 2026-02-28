@@ -10,8 +10,6 @@ import 'config/constants/app_constants.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   if (!kIsWeb) {
     Stripe.publishableKey = AppConstants.stripePublishableKey;
   }

@@ -1,20 +1,28 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../models/chat_model.dart';
-import '../../config/constants/app_constants.dart';
 
 class ChatService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final List<ChatModel> _messages = [];
+  final _chatController = StreamController<List<ChatModel>>.broadcast();
 
   Stream<List<ChatModel>> getMessages() {
-    return _firestore
-        .collection(AppConstants.chatCollection)
-        .orderBy('timestamp', descending: true)
-        .snapshots()
-        .map((snapshot) {
-          return snapshot.docs
-              .map((doc) => ChatModel.fromJson(doc.data(), doc.id))
-              .toList();
-        });
+    // Return mock messages initially
+    if (_messages.isEmpty) {
+      _messages.addAll([
+        ChatModel(
+          id: '1',
+          senderId: 'bot',
+          senderName: 'Tizim',
+          text: 'Super Arab tili chatiga xush kelibsiz!',
+          timestamp: DateTime.now().subtract(const Duration(minutes: 5)),
+        ),
+      ]);
+    }
+
+    // Immediate first data
+    Timer.run(() => _chatController.add(List.from(_messages.reversed)));
+
+    return _chatController.stream;
   }
 
   Future<void> sendMessage(
@@ -23,12 +31,18 @@ class ChatService {
     String text,
   ) async {
     final chat = ChatModel(
-      id: '',
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       senderId: senderId,
       senderName: senderName,
       text: text,
       timestamp: DateTime.now(),
     );
-    await _firestore.collection(AppConstants.chatCollection).add(chat.toJson());
+
+    _messages.add(chat);
+    _chatController.add(List.from(_messages.reversed));
+  }
+
+  void dispose() {
+    _chatController.close();
   }
 }

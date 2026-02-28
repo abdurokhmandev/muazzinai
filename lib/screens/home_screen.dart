@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/app_provider.dart';
 import '../theme/app_theme.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = Provider.of<AppProvider>(context).user;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(appProvider).user;
 
     return Scaffold(
       body: SafeArea(
@@ -23,7 +23,7 @@ class HomeScreen extends StatelessWidget {
               _buildCourseProgress(),
               const SizedBox(height: 20),
               GestureDetector(
-                onTap: () => context.push('/details'),
+                onTap: () => context.push('/videos'),
                 child: _buildHeroBanner(),
               ),
               const SizedBox(height: 16),

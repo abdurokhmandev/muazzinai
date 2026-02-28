@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/app_provider.dart';
 import '../widgets/game_card_widget.dart';
 
-class GamesScreen extends StatelessWidget {
+class GamesScreen extends ConsumerWidget {
   const GamesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final games = Provider.of<AppProvider>(context).games;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final games = ref.watch(appProvider).games;
 
     return Scaffold(
       backgroundColor: Colors.white,

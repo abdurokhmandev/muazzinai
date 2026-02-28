@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
 
-class BottomNavigationWidget extends StatelessWidget {
+class BottomNavigationWidget extends ConsumerWidget {
   const BottomNavigationWidget({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<AppProvider>(context);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(appProvider);
     final tabs = [
       {'icon': Icons.home_rounded, 'path': '/'},
       {'icon': Icons.menu_book_rounded, 'path': '/courses'},

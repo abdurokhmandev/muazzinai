@@ -1,44 +1,33 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../models/user_model.dart';
-import '../../config/constants/app_constants.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Simple controller to mock auth state changes
+  final _authStateController = StreamController<UserModel?>.broadcast();
+  UserModel? _currentUser;
 
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<UserModel?> get authStateChanges => _authStateController.stream;
 
   Future<UserModel?> getCurrentUserData() async {
-    User? currentUser = _auth.currentUser;
-    if (currentUser != null) {
-      DocumentSnapshot doc = await _firestore
-          .collection(AppConstants.usersCollection)
-          .doc(currentUser.uid)
-          .get();
-      if (doc.exists) {
-        return UserModel.fromJson(doc.data() as Map<String, dynamic>, doc.id);
-      }
-    }
-    return null;
+    // Return cached user if any
+    return _currentUser;
   }
 
   Future<UserModel?> signIn(String email, String password) async {
     try {
-      UserCredential result = await _auth.signInWithEmailAndPassword(
+      // Simulate network delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Mock successful login for any user
+      _currentUser = UserModel(
+        id: 'mock_user_123',
         email: email,
-        password: password,
+        name: email.split('@')[0],
+        joinDate: DateTime.now(),
       );
-      if (result.user != null) {
-        DocumentSnapshot doc = await _firestore
-            .collection(AppConstants.usersCollection)
-            .doc(result.user!.uid)
-            .get();
-        if (doc.exists) {
-          return UserModel.fromJson(doc.data() as Map<String, dynamic>, doc.id);
-        }
-      }
-      return null;
+
+      _authStateController.add(_currentUser);
+      return _currentUser;
     } catch (e) {
       rethrow;
     }
@@ -46,35 +35,32 @@ class AuthService {
 
   Future<UserModel?> signUp(String email, String password, String name) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      if (result.user != null) {
-        UserModel newUser = UserModel(
-          id: result.user!.uid,
-          email: email,
-          name: name,
-          joinDate: DateTime.now(),
-        );
+      await Future.delayed(const Duration(seconds: 1));
 
-        await _firestore
-            .collection(AppConstants.usersCollection)
-            .doc(result.user!.uid)
-            .set(newUser.toJson());
-        return newUser;
-      }
-      return null;
+      _currentUser = UserModel(
+        id: 'mock_user_${DateTime.now().millisecondsSinceEpoch}',
+        email: email,
+        name: name,
+        joinDate: DateTime.now(),
+      );
+
+      _authStateController.add(_currentUser);
+      return _currentUser;
     } catch (e) {
       rethrow;
     }
   }
 
   Future<void> signOut() async {
-    await _auth.signOut();
+    _currentUser = null;
+    _authStateController.add(null);
   }
 
   Future<void> resetPassword(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
+    await Future.delayed(const Duration(milliseconds: 500));
+  }
+
+  void dispose() {
+    _authStateController.close();
   }
 }

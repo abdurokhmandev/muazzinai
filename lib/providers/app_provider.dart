@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/models.dart';
+
+final appProvider = ChangeNotifierProvider<AppProvider>((ref) {
+  return AppProvider();
+});
 
 class AppProvider with ChangeNotifier {
   int _currentIndex = 0;
