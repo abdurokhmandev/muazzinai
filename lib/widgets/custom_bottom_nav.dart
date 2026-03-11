@@ -9,7 +9,7 @@ class CustomBottomNav extends StatelessWidget {
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
-    if (location.startsWith('/videos')) return 1;
+    if (location.startsWith('/games')) return 1;
     if (location.startsWith('/vocabulary')) return 2;
     if (location.startsWith('/chat')) return 3;
     if (location.startsWith('/leaderboard')) return 4;
@@ -23,7 +23,7 @@ class CustomBottomNav extends StatelessWidget {
         context.go('/');
         break;
       case 1:
-        context.go('/videos');
+        context.go('/games');
         break;
       case 2:
         context.go('/vocabulary');
@@ -65,8 +65,8 @@ class CustomBottomNav extends StatelessWidget {
                 _buildNavItem(
                   context,
                   1,
-                  Icons.play_circle_fill_rounded,
-                  'Videos',
+                  Icons.videogame_asset_rounded,
+                  'Games',
                 ),
                 _buildNavItem(context, 2, Icons.menu_book_rounded, 'Vocab'),
                 _buildNavItem(context, 3, Icons.chat_bubble_rounded, 'Chat'),

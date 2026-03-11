@@ -6,12 +6,12 @@ import '../../screens/auth/login_screen.dart';
 import '../../screens/auth/signup_screen.dart';
 
 import '../../screens/home_screen.dart';
-import '../../screens/video_lesson_screen.dart';
 import '../../screens/vocabulary_screen.dart';
 import '../../screens/chat_screen.dart';
 import '../../screens/leaderboard_screen.dart';
 import '../../screens/profile_screen.dart';
 import '../../screens/speaking_club_screen.dart';
+import '../../games/games.dart';
 import '../../screens/mock_exam_screen.dart';
 import '../../screens/premium_screen.dart';
 import '../../screens/video_player_screen.dart';
@@ -48,8 +48,8 @@ class AppRouter {
         routes: [
           GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
           GoRoute(
-            path: '/videos',
-            builder: (context, state) => const VideoLessonScreen(),
+            path: '/games',
+            builder: (context, state) => const GamePage(),
           ),
           GoRoute(
             path: '/vocabulary',
