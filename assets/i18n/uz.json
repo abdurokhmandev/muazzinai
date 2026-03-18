@@ -1,0 +1,15 @@
+{
+    "dictionary": {
+        "title": "Lug'at",
+        "search_hint": "So'z qidiring...",
+        "no_words": "So'zlar topilmadi",
+        "categories": {
+            "all": "Barchasi",
+            "greetings": "Salomlashish",
+            "education": "Ta'lim",
+            "transport": "Transport"
+        },
+        "difficulty": "Qiyinchilik",
+        "error_audio": "Audioni o'qishda xatolik yuz berdi."
+    }
+}

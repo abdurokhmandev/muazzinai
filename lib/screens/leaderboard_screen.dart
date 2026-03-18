@@ -1,25 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../config/theme/colors.dart';
+import '../providers/app_provider.dart';
 
-class LeaderboardScreen extends StatelessWidget {
+class LeaderboardScreen extends ConsumerWidget {
   const LeaderboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Mock Leaderboard Data
+  Widget build(BuildContext context, WidgetRef ref) {
+    final me = ref.watch(appProvider).user;
+    // Mock Leaderboard Data + Real Current User
     final List<Map<String, dynamic>> leaders = [
-      {'name': 'Alisher', 'score': 1250, 'level': 'B1', 'streak': 45},
-      {'name': 'Dilnoza', 'score': 1120, 'level': 'A2', 'streak': 30},
-      {'name': 'Rustam', 'score': 980, 'level': 'A2', 'streak': 12},
       {
-        'name': 'Abdurahmon (Siz)',
-        'score': 850,
-        'level': 'A1',
-        'streak': 5,
-        'isMe': true,
+        'name': 'Alisher',
+        'score': 1250,
+        'level': 'B1',
+        'streak': 45,
+        'emoji': '👳',
       },
-      {'name': 'Zarina', 'score': 740, 'level': 'A1', 'streak': 2},
+      {
+        'name': 'Dilnoza',
+        'score': 1120,
+        'level': 'A2',
+        'streak': 30,
+        'emoji': '🧕',
+      },
+      {
+        'name': 'Rustam',
+        'score': 980,
+        'level': 'A2',
+        'streak': 12,
+        'emoji': '👦',
+      },
+      {
+        'name': '${me.name} (Siz)',
+        'score': me.score,
+        'level': 'A${me.level}',
+        'streak': me.streak,
+        'isMe': true,
+        'emoji': me.profileEmoji,
+      },
+      {
+        'name': 'Zarina',
+        'score': 740,
+        'level': 'A1',
+        'streak': 2,
+        'emoji': '👧',
+      },
     ];
+
+    // Sort by score
+    leaders.sort((a, b) => b['score'].compareTo(a['score']));
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -84,11 +115,8 @@ class LeaderboardScreen extends StatelessWidget {
                           alpha: 0.2,
                         ),
                         child: Text(
-                          user['name'][0],
-                          style: const TextStyle(
-                            color: AppColors.primaryPurple,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          user['emoji'] ?? user['name'][0],
+                          style: const TextStyle(fontSize: 24),
                         ),
                       ),
                       const SizedBox(width: 16),

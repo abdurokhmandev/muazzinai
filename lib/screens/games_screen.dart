@@ -33,6 +33,7 @@ class GamesScreen extends ConsumerWidget {
         ],
       ),
       body: ListView.builder(
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: games.length,
         itemBuilder: (context, index) {

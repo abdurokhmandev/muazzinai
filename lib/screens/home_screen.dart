@@ -14,13 +14,17 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(user),
               const SizedBox(height: 20),
-              _buildCourseProgress(),
+              GestureDetector(
+                onTap: () => context.push('/course'),
+                child: _buildCourseProgress(),
+              ),
               const SizedBox(height: 20),
               GestureDetector(
                 onTap: () => context.push('/videos'),
@@ -28,6 +32,8 @@ class HomeScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               _buildGridCards(context),
+              const SizedBox(height: 16),
+              _buildStoryBanner(context),
               const SizedBox(height: 16),
               _buildSpeakingMockRow(context),
               const SizedBox(height: 16),
@@ -492,6 +498,59 @@ class HomeScreen extends ConsumerWidget {
               color: Colors.white,
               size: 22,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStoryBanner(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push('/story'),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1535),
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF7B4FE0).withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.auto_stories_rounded,
+                color: Color(0xFF9D6FFF),
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Hikoyalar',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Arab tilida qiziqarli hikoyalar',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Colors.white38),
           ],
         ),
       ),

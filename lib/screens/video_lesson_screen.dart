@@ -25,6 +25,7 @@ class VideoLessonScreen extends ConsumerWidget {
           final course = courses.first; // For simplicity, take the first course
 
           return ListView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(16),
             children: [
               _buildCourseHeader(course.title, course.progress),

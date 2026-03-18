@@ -1,0 +1,15 @@
+{
+    "dictionary": {
+        "title": "القاموس",
+        "search_hint": "ابحث عن كلمة...",
+        "no_words": "لم يتم العثور على كلمات",
+        "categories": {
+            "all": "الكل",
+            "greetings": "التحيات",
+            "education": "التعليم",
+            "transport": "المواصلات"
+        },
+        "difficulty": "الصعوبة",
+        "error_audio": "خطأ في الصوت. تحقق من الاتصال."
+    }
+}

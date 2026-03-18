@@ -26,6 +26,7 @@ class CourseDetailsScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             _buildBanner(),

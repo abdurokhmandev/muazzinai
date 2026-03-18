@@ -15,14 +15,30 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Mock Data
-  UserModel get user => UserModel(
-    name: 'User',
+  UserModel _user = UserModel(
+    name: 'Abdurahmon MUMINOV',
     level: 1,
-    streak: 0,
+    streak: 5,
+    score: 850,
     isPro: true,
     profileEmoji: '🇸🇦',
   );
+
+  UserModel get user => _user;
+
+  void updateUser({String? name, String? profileEmoji, int? score}) {
+    _user = _user.copyWith(
+      name: name,
+      profileEmoji: profileEmoji,
+      score: score,
+    );
+    notifyListeners();
+  }
+
+  void addScore(int points) {
+    _user = _user.copyWith(score: _user.score + points);
+    notifyListeners();
+  }
 
   List<GameModel> get games => [
     GameModel(
@@ -53,6 +69,16 @@ class AppProvider with ChangeNotifier {
       description:
           'Keyingi so\'z oldingi so\'zning oxirgi harfi bilan boshlanadi.',
       gradientColors: [const Color(0xFF7C3AED), const Color(0xFF8B12FF)],
+    ),
+    GameModel(
+      title: 'ARABIC PUZZLE',
+      description: 'Harflarni to\'g\'ri tartibda terib so\'z yasang.',
+      gradientColors: [const Color(0xFF10B981), const Color(0xFF34D399)],
+    ),
+    GameModel(
+      title: 'VOICE MATCH',
+      description: 'Eshitgan so\'zingizni to\'g\'ri variantini tanlang.',
+      gradientColors: [const Color(0xFF3B82F6), const Color(0xFF60A5FA)],
     ),
   ];
 }

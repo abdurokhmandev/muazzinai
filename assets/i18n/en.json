@@ -1,0 +1,15 @@
+{
+  "dictionary": {
+    "title": "Dictionary",
+    "search_hint": "Search word...",
+    "no_words": "No words found",
+    "categories": {
+      "all": "All",
+      "greetings": "Greetings",
+      "education": "Education",
+      "transport": "Transport"
+    },
+    "difficulty": "Difficulty",
+    "error_audio": "Audio error. Check connection."
+  }
+}

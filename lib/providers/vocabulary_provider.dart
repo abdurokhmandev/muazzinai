@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:translator/translator.dart';
 import '../models/word_model.dart';
 
 final vocabularyProvider =
@@ -10,6 +11,7 @@ final vocabularyProvider =
 
 class VocabularyNotifier extends StateNotifier<AsyncValue<List<WordModel>>> {
   List<WordModel> _allWords = [];
+  final _translator = GoogleTranslator();
 
   VocabularyNotifier() : super(const AsyncValue.loading()) {
     _loadMockData();
@@ -81,20 +83,62 @@ class VocabularyNotifier extends StateNotifier<AsyncValue<List<WordModel>>> {
     });
   }
 
-  void filter(String query, String category) {
+  Future<void> filter(String query, String category) async {
+    state = const AsyncValue.loading();
     var filtered = _allWords;
+
+    if (category != 'All') {
+      filtered = filtered.where((w) => w.category == category).toList();
+    }
+
     if (query.isNotEmpty) {
-      filtered = filtered
+      final localMatches = filtered
           .where(
             (w) =>
                 w.uzbek.toLowerCase().contains(query.toLowerCase()) ||
                 w.arabic.contains(query),
           )
           .toList();
+
+      if (localMatches.isNotEmpty) {
+        state = AsyncValue.data(localMatches);
+      } else {
+        // Dynamic translation
+        try {
+          final isArabic = RegExp(r'[\u0600-\u06FF]').hasMatch(query);
+          String translatedUzbek = '';
+          String translatedArabic = '';
+
+          if (isArabic) {
+            translatedArabic = query;
+            final translation = await _translator.translate(query, to: 'uz');
+            translatedUzbek = translation.text;
+          } else {
+            translatedUzbek = query;
+            final translation = await _translator.translate(query, to: 'ar');
+            translatedArabic = translation.text;
+          }
+
+          final dynamicWord = WordModel(
+            id: 'dyn_${DateTime.now().millisecondsSinceEpoch}',
+            arabic: translatedArabic,
+            uzbek: translatedUzbek,
+            difficulty: 'Tarjima',
+            category: 'Search',
+            exampleArabic: '',
+            exampleUzbek: '',
+          );
+
+          state = AsyncValue.data([dynamicWord]);
+        } catch (e) {
+          state = AsyncValue.error(
+            'Tarjima qilishda xatolik yuz berdi: $e',
+            StackTrace.current,
+          );
+        }
+      }
+    } else {
+      state = AsyncValue.data(filtered);
     }
-    if (category != 'All') {
-      filtered = filtered.where((w) => w.category == category).toList();
-    }
-    state = AsyncValue.data(filtered);
   }
 }

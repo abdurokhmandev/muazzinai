@@ -11,10 +11,13 @@ import '../../screens/chat_screen.dart';
 import '../../screens/leaderboard_screen.dart';
 import '../../screens/profile_screen.dart';
 import '../../screens/speaking_club_screen.dart';
-import '../../games/games.dart';
+import '../../screens/games_screen.dart';
 import '../../screens/mock_exam_screen.dart';
 import '../../screens/premium_screen.dart';
 import '../../screens/video_player_screen.dart';
+import '../../screens/video_lesson_screen.dart';
+import '../../screens/course_details_screen.dart';
+import '../../screens/story_page.dart';
 import '../../models/lesson_model.dart';
 
 import '../../widgets/custom_bottom_nav.dart';
@@ -49,7 +52,7 @@ class AppRouter {
           GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
           GoRoute(
             path: '/games',
-            builder: (context, state) => const GamePage(),
+            builder: (context, state) => const GamesScreen(),
           ),
           GoRoute(
             path: '/vocabulary',
@@ -89,6 +92,15 @@ class AppRouter {
           return VideoPlayerScreen(lesson: lesson);
         },
       ),
+      GoRoute(
+        path: '/videos',
+        builder: (context, state) => const VideoLessonScreen(),
+      ),
+      GoRoute(
+        path: '/course',
+        builder: (context, state) => const CourseDetailsScreen(),
+      ),
+      GoRoute(path: '/story', builder: (context, state) => const StoryPage()),
     ],
   );
 }
