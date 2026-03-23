@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/app_provider.dart';
-import '../theme/app_theme.dart';
+import '../config/theme/colors.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});

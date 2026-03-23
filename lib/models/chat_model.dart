@@ -1,5 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
+/// Chat message model for the in-app group chat.
+/// Uses pure Dart types — no Firebase dependency.
 class ChatModel {
   final String id;
   final String senderId;
@@ -21,7 +21,9 @@ class ChatModel {
       senderId: json['senderId'] ?? '',
       senderName: json['senderName'] ?? 'Foydalanuvchi',
       text: json['text'] ?? '',
-      timestamp: (json['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      timestamp: json['timestamp'] != null
+          ? DateTime.parse(json['timestamp'])
+          : DateTime.now(),
     );
   }
 
@@ -30,7 +32,7 @@ class ChatModel {
       'senderId': senderId,
       'senderName': senderName,
       'text': text,
-      'timestamp': FieldValue.serverTimestamp(),
+      'timestamp': timestamp.toIso8601String(),
     };
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../theme/app_theme.dart';
+import '../config/theme/colors.dart';
 import '../widgets/learning_path_widget.dart';
 
 class CourseDetailsScreen extends StatelessWidget {
