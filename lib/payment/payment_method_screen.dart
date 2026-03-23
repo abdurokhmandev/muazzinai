@@ -225,8 +225,6 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
                       const SizedBox(height: 14),
                       _buildCardsCarousel(),
                       const SizedBox(height: 28),
-                      _buildSectionTitle('Boshqa usullar'),
-                      const SizedBox(height: 14),
                       _buildCashOption(),
                       const SizedBox(height: 32),
                       _buildPayButton(),
@@ -620,30 +618,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
                 child: Text('💵', style: TextStyle(fontSize: 24)),
               ),
             ),
-            const SizedBox(width: 14),
-            const Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Naqd pul',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: 3),
-                  Text(
-                    'Ofisda naqd to\'lang',
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+
             if (_selectedCardIndex == -2)
               const Icon(Icons.check_circle_rounded,
                   color: Color(0xFF14B8A6), size: 24),

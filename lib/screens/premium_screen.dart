@@ -482,12 +482,7 @@ class _PremiumScreenState extends State<PremiumScreen>
         ),
         const SizedBox(height: 14),
         // Cash Payment Button
-        _buildPaymentActionButton(
-          icon: Icons.payments_rounded,
-          label: 'Naqd pul bilan to\'lash',
-          gradient: const [Color(0xFF14B8A6), Color(0xFF0D9488)],
-          onTap: () => _showCashPaymentDialog(),
-        ),
+        
       ],
     );
   }
@@ -534,127 +529,8 @@ class _PremiumScreenState extends State<PremiumScreen>
     );
   }
 
-  void _showCashPaymentDialog() {
-    final plan = _selectedPlan == 0 ? 'Oylik' : 'Yillik';
-    final price = _selectedPlan == 0 ? '\$9.99' : '\$79.99';
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(28),
-        decoration: const BoxDecoration(
-          color: Color(0xFF1E1B4B),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: const Color(0xFF14B8A6).withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                child: Text('💵', style: TextStyle(fontSize: 40)),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Naqd pul bilan to\'lash',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '$plan reja — $price',
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.07),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.1),
-                ),
-              ),
-              child: Column(
-                children: [
-                  _buildCashInfoRow(
-                      Icons.location_on_rounded, 'Ofisga tashrif buyuring'),
-                  const SizedBox(height: 12),
-                  _buildCashInfoRow(
-                      Icons.phone_rounded, '+998 90 123 45 67'),
-                  const SizedBox(height: 12),
-                  _buildCashInfoRow(
-                      Icons.access_time_rounded, 'Du-Ju: 09:00 - 18:00'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF14B8A6), Color(0xFF0D9488)],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Text(
-                  'Tushundim',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-        ),
-      ),
-    );
-  }
 
-  Widget _buildCashInfoRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, color: const Color(0xFF14B8A6), size: 20),
-        const SizedBox(width: 12),
-        Text(
-          text,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.8),
-            fontSize: 14,
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class _FeatureData {
