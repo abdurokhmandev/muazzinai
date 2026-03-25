@@ -3,13 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme/colors.dart';
-import '../../config/theme/text_styles.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/glass_container.dart';
 
-/// Multi-step phone registration screen.
-///
-/// Flow: Enter phone → OTP verification → Set password → Done
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
@@ -18,10 +15,8 @@ class SignupScreen extends ConsumerStatefulWidget {
 }
 
 class _SignupScreenState extends ConsumerState<SignupScreen> {
-  // ── Step tracking: 0 = phone, 1 = OTP, 2 = password ──
   int _currentStep = 0;
 
-  // ── Controllers ──
   final _phoneController = TextEditingController();
   final _otpController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -30,7 +25,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-  String? _generatedOtp; // Simulated OTP shown in-app
+  String? _generatedOtp;
 
   @override
   void dispose() {
@@ -41,7 +36,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     super.dispose();
   }
 
-  // ── Step 1: Request OTP ──
   Future<void> _requestOtp() async {
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) {
@@ -63,8 +57,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           _currentStep = 1;
           _isLoading = false;
         });
-
-        // Show simulated SMS notification
         _showOtpNotification(code);
       }
     } on AuthException catch (e) {
@@ -75,12 +67,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        _showError('Xatolik yuz berdi: $e');
+        _showError('Xatolik yuz berdi');
       }
     }
   }
 
-  // ── Step 2: Verify OTP ──
   Future<void> _verifyOtp() async {
     final code = _otpController.text.trim();
     if (code.isEmpty) {
@@ -107,12 +98,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        _showError('Xatolik yuz berdi: $e');
+        _showError('Xatolik yuz berdi');
       }
     }
   }
 
-  // ── Step 3: Set password & register ──
   Future<void> _register() async {
     final password = _passwordController.text;
     final confirm = _confirmPasswordController.text;
@@ -148,12 +138,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        _showError('Xatolik yuz berdi: $e');
+        _showError('Xatolik yuz berdi');
       }
     }
   }
-
-  // ── UI Helpers ──
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -161,7 +149,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         content: Text(message),
         backgroundColor: Colors.redAccent,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -178,39 +166,39 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         ),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
 
-  /// Shows the simulated SMS OTP as a MaterialBanner notification.
   void _showOtpNotification(String code) {
     ScaffoldMessenger.of(context).showMaterialBanner(
       MaterialBanner(
         padding: const EdgeInsets.all(16),
+        elevation: 10,
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
               '📱 SMS xabar (simulyatsiya)',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.primaryPurple),
             ),
             const SizedBox(height: 4),
             Text(
               'Sizning tasdiqlash kodingiz: $code',
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ],
         ),
-        backgroundColor: AppColors.primaryPurple.withValues(alpha: 0.1),
-        leading: const Icon(Icons.sms_rounded, color: AppColors.primaryPurple),
+        backgroundColor: Colors.white,
+        leading: const Icon(Icons.sms_rounded, color: AppColors.primaryPurple, size: 30),
         actions: [
           TextButton(
             onPressed: () {
               ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
             },
-            child: const Text('YOPISH'),
+            child: const Text('TUSHUNARLI', style: TextStyle(fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -220,47 +208,54 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () {
-            // Hide any banners before navigating back
-            ScaffoldMessenger.of(context).clearMaterialBanners();
-            if (_currentStep > 0) {
-              setState(() => _currentStep--);
-            } else {
-              context.pop();
-            }
-          },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: AppColors.darkGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+        child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Step Indicator ──
-              _buildStepIndicator(),
-              const SizedBox(height: 32),
-
-              // ── Title ──
-              Text(
-                _stepTitle,
-                style: AppTextStyles.h1,
+              _buildAppBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(32.0),
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildStepIndicator(),
+                      const SizedBox(height: 48),
+                      Text(
+                        _stepTitle,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _stepSubtitle,
+                        style: TextStyle(
+                          color: AppColors.textSecondary.withValues(alpha: 0.7),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 48),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: _buildCurrentStepView(),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                _stepSubtitle,
-                style: AppTextStyles.body1,
-              ),
-              const SizedBox(height: 48),
-
-              // ── Step Content ──
-              if (_currentStep == 0) _buildPhoneStep(),
-              if (_currentStep == 1) _buildOtpStep(),
-              if (_currentStep == 2) _buildPasswordStep(),
             ],
           ),
         ),
@@ -268,101 +263,111 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     );
   }
 
+  Widget _buildAppBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 22),
+            onPressed: () {
+              ScaffoldMessenger.of(context).clearMaterialBanners();
+              if (_currentStep > 0) {
+                setState(() => _currentStep--);
+              } else {
+                context.pop();
+              }
+            },
+          ),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
+
   String get _stepTitle {
     switch (_currentStep) {
-      case 0:
-        return 'Telefon raqam';
-      case 1:
-        return 'Tasdiqlash kodi';
-      case 2:
-        return 'Parol yarating';
-      default:
-        return '';
+      case 0: return 'Telefon raqam';
+      case 1: return 'Tasdiqlash kodi';
+      case 2: return 'Parol yarating';
+      default: return '';
     }
   }
 
   String get _stepSubtitle {
     switch (_currentStep) {
-      case 0:
-        return 'Telefon raqamingizni kiriting';
-      case 1:
-        return 'SMS orqali yuborilgan kodni kiriting';
-      case 2:
-        return 'Hisobingiz uchun kuchli parol yarating';
-      default:
-        return '';
+      case 0: return 'Telefon raqamingizni kiriting';
+      case 1: return 'SMS orqali yuborilgan kodni kiriting';
+      case 2: return 'Hisobingiz uchun kuchli parol yarating';
+      default: return '';
     }
   }
 
-  // ── Step Indicator Dots ──
   Widget _buildStepIndicator() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(3, (index) {
         final isActive = index <= _currentStep;
         final isCurrent = index == _currentStep;
-        return Container(
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: isCurrent ? 32 : 12,
+          width: isCurrent ? 40 : 12,
           height: 12,
           decoration: BoxDecoration(
-            color: isActive
-                ? AppColors.primaryPurple
-                : AppColors.primaryPurple.withValues(alpha: 0.2),
+            gradient: isActive 
+                ? const LinearGradient(colors: [AppColors.primaryPurple, AppColors.primaryBlue])
+                : null,
+            color: isActive ? null : AppColors.textSecondary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(6),
+            boxShadow: isActive ? [
+              BoxShadow(
+                color: AppColors.primaryPurple.withValues(alpha: 0.3),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              )
+            ] : null,
           ),
         );
       }),
     );
   }
 
-  // ── Step 1: Phone Input ──
+  Widget _buildCurrentStepView() {
+    switch (_currentStep) {
+      case 0: return _buildPhoneStep();
+      case 1: return _buildOtpStep();
+      case 2: return _buildPasswordStep();
+      default: return const SizedBox.shrink();
+    }
+  }
+
   Widget _buildPhoneStep() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      key: const ValueKey('phone'),
       children: [
-        TextField(
+        _buildInputField(
           controller: _phoneController,
-          decoration: InputDecoration(
-            hintText: '+998 90 123 45 67',
-            labelText: 'Telefon raqam',
-            prefixIcon: const Icon(Icons.phone_outlined),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: AppColors.white,
-          ),
+          hint: '+998 90 123 45 67',
+          label: 'Telefon raqam',
+          icon: Icons.phone_android_rounded,
           keyboardType: TextInputType.phone,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[\d\+\s\-]')),
-          ],
         ),
-        const SizedBox(height: 32),
-        _buildActionButton('Kod yuborish', _requestOtp),
+        const SizedBox(height: 48),
+        _buildActionButton('KOD YUBORISH', _requestOtp),
       ],
     );
   }
 
-  // ── Step 2: OTP Input ──
   Widget _buildOtpStep() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      key: const ValueKey('otp'),
       children: [
-        TextField(
+        _buildInputField(
           controller: _otpController,
-          decoration: InputDecoration(
-            hintText: '1234',
-            labelText: 'Tasdiqlash kodi',
-            prefixIcon: const Icon(Icons.pin_outlined),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: AppColors.white,
-          ),
+          hint: '1 2 3 4',
+          label: 'Tasdiqlash kodi',
+          icon: Icons.pin_rounded,
           keyboardType: TextInputType.number,
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
@@ -370,51 +375,46 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           ],
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontSize: 32,
+            fontWeight: FontWeight.w900,
             letterSpacing: 12,
+            color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 16),
-
-        // Show the OTP code hint
-        if (_generatedOtp != null)
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.amber.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
-            ),
+        if (_generatedOtp != null) ...[
+          const SizedBox(height: 24),
+          GlassContainer(
+            padding: const EdgeInsets.all(16),
+            borderRadius: 16,
+            opacity: 0.05,
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: Colors.amber, size: 20),
-                const SizedBox(width: 8),
+                const Icon(Icons.info_outline_rounded, color: Colors.orangeAccent, size: 20),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Simulyatsiya: Sizning kodingiz — $_generatedOtp',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textSecondary,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-
-        const SizedBox(height: 32),
-        _buildActionButton('Tasdiqlash', _verifyOtp),
+        ],
+        const SizedBox(height: 48),
+        _buildActionButton('TASDIQLASH', _verifyOtp),
         const SizedBox(height: 16),
-
-        // Resend OTP
         TextButton(
           onPressed: _isLoading ? null : _requestOtp,
           child: const Text(
             'Kodni qayta yuborish',
             style: TextStyle(
-              color: AppColors.primaryPurple,
-              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w900,
             ),
           ),
         ),
@@ -422,102 +422,128 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     );
   }
 
-  // ── Step 3: Password ──
   Widget _buildPasswordStep() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      key: const ValueKey('password'),
       children: [
-        TextField(
+        _buildInputField(
           controller: _passwordController,
-          decoration: InputDecoration(
-            hintText: 'Parol',
-            labelText: 'Parol',
-            prefixIcon: const Icon(Icons.lock_outline),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscurePassword
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-              ),
-              onPressed: () =>
-                  setState(() => _obscurePassword = !_obscurePassword),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: AppColors.white,
-          ),
+          hint: 'Parol',
+          label: 'Yangi parol',
+          icon: Icons.lock_outline_rounded,
+          isPassword: true,
           obscureText: _obscurePassword,
+          onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
         ),
-        const SizedBox(height: 16),
-        TextField(
+        const SizedBox(height: 20),
+        _buildInputField(
           controller: _confirmPasswordController,
-          decoration: InputDecoration(
-            hintText: 'Parolni tasdiqlang',
-            labelText: 'Parolni tasdiqlang',
-            prefixIcon: const Icon(Icons.lock_outline),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscureConfirm
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-              ),
-              onPressed: () =>
-                  setState(() => _obscureConfirm = !_obscureConfirm),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: AppColors.white,
-          ),
+          hint: 'Parolni tasdiqlang',
+          label: 'Parolni tasdiqlang',
+          icon: Icons.lock_outline_rounded,
+          isPassword: true,
           obscureText: _obscureConfirm,
+          onToggleVisibility: () => setState(() => _obscureConfirm = !_obscureConfirm),
         ),
-        const SizedBox(height: 12),
-        Text(
-          '• Kamida 6 ta belgidan iborat bo\'lishi kerak',
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.grey.shade500,
-          ),
-        ),
-        const SizedBox(height: 32),
-        _buildActionButton('Ro\'yxatdan o\'tish', _register),
+        const SizedBox(height: 48),
+        _buildActionButton('RO\'YXATDAN O\'TISH', _register),
       ],
     );
   }
 
-  // ── Shared Action Button ──
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hint,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+    bool obscureText = false,
+    VoidCallback? onToggleVisibility,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+    TextAlign textAlign = TextAlign.start,
+    TextStyle? style,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10, bottom: 8),
+          child: Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        GlassContainer(
+          borderRadius: 20,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          opacity: 0.08,
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            textAlign: textAlign,
+            style: style ?? const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.3)),
+              prefixIcon: Icon(icon, color: AppColors.textSecondary.withValues(alpha: 0.6), size: 22),
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        obscureText ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                        color: AppColors.textSecondary.withValues(alpha: 0.6),
+                        size: 22,
+                      ),
+                      onPressed: onToggleVisibility,
+                    )
+                  : null,
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildActionButton(String label, VoidCallback onPressed) {
-    return ElevatedButton(
-      onPressed: _isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryPurple,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+    return GestureDetector(
+      onTap: _isLoading ? null : onPressed,
+      child: Container(
+        height: 64,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            colors: [AppColors.primaryPurple, AppColors.primaryBlue],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryPurple.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Center(
+          child: _isLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                  ),
+                ),
         ),
       ),
-      child: _isLoading
-          ? const SizedBox(
-              height: 24,
-              width: 24,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2.5,
-              ),
-            )
-          : Text(
-              label,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
     );
   }
 }

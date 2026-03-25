@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/app_provider.dart';
+import '../config/theme/colors.dart';
+import '../widgets/glass_container.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -10,56 +12,83 @@ class ProfileScreen extends ConsumerWidget {
     final user = ref.watch(appProvider).user;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        title: const Text(
-          'Profil',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: AppColors.darkGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.black),
-            onPressed: () {},
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildAppBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildUserInfoHeader(context, ref, user),
+                      const SizedBox(height: 32),
+                      _buildCertificateCTA(),
+                      const SizedBox(height: 32),
+                      _buildSectionHeader('Yutuqlar'),
+                      const SizedBox(height: 16),
+                      _buildAchievements(),
+                      const SizedBox(height: 32),
+                      _buildSectionHeader('Faollik'),
+                      const SizedBox(height: 16),
+                      _buildActivityCard(),
+                      const SizedBox(height: 32),
+                      _buildSectionHeader('Kurslarim'),
+                      const SizedBox(height: 16),
+                      _buildMyCourses(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            _buildUserInfo(context, ref, user),
-            const SizedBox(height: 32),
-            _buildCertificateCTA(),
-            const SizedBox(height: 32),
-            _buildSectionHeader('Yutuqlar'),
-            const SizedBox(height: 16),
-            _buildAchievements(),
-            const SizedBox(height: 32),
-            _buildSectionHeader('Faollik'),
-            const SizedBox(height: 16),
-            _buildActivityCard(),
-            const SizedBox(height: 32),
-            _buildSectionHeader('Kurslarim'),
-            const SizedBox(height: 16),
-            _buildMyCourses(),
-            const SizedBox(height: 40),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildUserInfo(BuildContext context, WidgetRef ref, user) {
+  Widget _buildAppBar() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'Profil',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+            ),
+          ),
+          GlassContainer(
+            borderRadius: 14,
+            padding: const EdgeInsets.all(8),
+            opacity: 0.1,
+            child: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserInfoHeader(BuildContext context, WidgetRef ref, user) {
+    return GlassContainer(
+      borderRadius: 32,
+      padding: const EdgeInsets.all(24),
+      opacity: 0.1,
       child: Row(
         children: [
           GestureDetector(
@@ -69,42 +98,44 @@ class ProfileScreen extends ConsumerWidget {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF63DC8A),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF6EE7B7), Color(0xFF10B981)],
+                    ),
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Center(
                     child: Text(
                       user.profileEmoji,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontSize: 40),
                     ),
                   ),
                 ),
                 Positioned(
                   bottom: 0,
                   right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade300, width: 1),
-                    ),
+                  child: GlassContainer(
+                    borderRadius: 50,
+                    padding: const EdgeInsets.all(6),
+                    opacity: 0.3,
                     child: const Icon(
-                      Icons.edit_outlined,
+                      Icons.edit_rounded,
                       size: 14,
-                      color: Colors.black54,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 24),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,26 +148,29 @@ class ProfileScreen extends ConsumerWidget {
                         child: Text(
                           user.name,
                           style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textPrimary,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 8),
                       const Icon(
-                        Icons.edit_outlined,
-                        size: 16,
-                        color: Colors.grey,
+                        Icons.edit_note_rounded,
+                        size: 20,
+                        color: AppColors.textSecondary,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   'Qo\'shilgan: Avgust 2025',
-                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.textSecondary.withValues(alpha: 0.8),
+                  ),
                 ),
               ],
             ),
@@ -147,39 +181,32 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _showEmojiPicker(BuildContext context, WidgetRef ref) {
-    final emojis = [
-      '🇸🇦',
-      '🧕',
-      '👳',
-      '🕌',
-      '📖',
-      '🌟',
-      '🐪',
-      '🌴',
-      '⚔️',
-      '🌙',
-    ];
+    final emojis = ['🇸🇦', '🧕', '👳', '🕌', '📖', '🌟', '🐪', '🌴', '⚔️', '🌙'];
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
-          ),
+      builder: (context) => GlassContainer(
+        borderRadius: 32,
+        padding: const EdgeInsets.all(32),
+        opacity: 0.2,
+        gradient: const LinearGradient(
+          colors: AppColors.darkGradient,
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
-        padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Profil rasmini tanlang',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: AppColors.textPrimary,
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Wrap(
               spacing: 16,
               runSpacing: 16,
@@ -190,16 +217,11 @@ class ProfileScreen extends ConsumerWidget {
                         ref.read(appProvider).updateUser(profileEmoji: e);
                         Navigator.pop(context);
                       },
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Center(
-                          child: Text(e, style: const TextStyle(fontSize: 30)),
-                        ),
+                      child: GlassContainer(
+                        borderRadius: 16,
+                        opacity: 0.1,
+                        padding: const EdgeInsets.all(12),
+                        child: Text(e, style: const TextStyle(fontSize: 32)),
                       ),
                     ),
                   )
@@ -212,24 +234,27 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showNameEditor(
-    BuildContext context,
-    WidgetRef ref,
-    String currentName,
-  ) {
+  void _showNameEditor(BuildContext context, WidgetRef ref, String currentName) {
     final controller = TextEditingController(text: currentName);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Ismni tahrirlash'),
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('Ismni tahrirlash', style: TextStyle(color: AppColors.textPrimary)),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(hintText: 'Ismingizni kiriting'),
+          style: const TextStyle(color: AppColors.textPrimary),
+          decoration: InputDecoration(
+            hintText: 'Ismingizni kiriting',
+            hintStyle: const TextStyle(color: AppColors.textMuted),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.glassBorder)),
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Bekor qilish'),
+            child: const Text('Bekor qilish', style: TextStyle(color: AppColors.textSecondary)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -244,28 +269,31 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildCertificateCTA() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SizedBox(
-        width: double.infinity,
-        height: 56,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFFF951A),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          child: const Text(
-            '2+6 SERTIFIKATINI OLISH',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
+    return GlassContainer(
+      borderRadius: 24,
+      padding: const EdgeInsets.all(2),
+      opacity: 0.1,
+      gradient: LinearGradient(
+        colors: [
+          Color(0xFFFBBF24).withValues(alpha: 0.3),
+          Color(0xFFF59E0B).withValues(alpha: 0.3),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          minimumSize: const Size.fromHeight(60),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+        child: const Text(
+          '2+6 SERTIFIKATINI OLISH',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1,
           ),
         ),
       ),
@@ -273,72 +301,69 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        TextButton(
+          onPressed: () {},
+          child: Text(
+            'Barchasi',
+            style: TextStyle(
+              color: AppColors.textSecondary.withValues(alpha: 0.6),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              'Barchasi',
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _buildAchievements() {
     final achievements = [
-      {'label': 'So\'z jangchisi', 'icon': Icons.shield_outlined},
-      {'label': 'Vunderkind', 'icon': Icons.school_outlined},
-      {'label': 'Marafonchi', 'icon': Icons.directions_run_outlined},
-      {'label': 'Tezkor o\'quvchi', 'icon': Icons.bolt_outlined},
+      {'label': 'So\'z jangchisi', 'icon': Icons.shield_rounded, 'color': Colors.blue},
+      {'label': 'Vunderkind', 'icon': Icons.school_rounded, 'color': Colors.amber},
+      {'label': 'Marafonchi', 'icon': Icons.directions_run_rounded, 'color': Colors.orange},
+      {'label': 'Tezkor o\'quvchi', 'icon': Icons.bolt_rounded, 'color': Colors.purple},
     ];
 
     return SizedBox(
-      height: 120,
+      height: 125,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         itemCount: achievements.length,
         separatorBuilder: (context, index) => const SizedBox(width: 20),
         itemBuilder: (context, index) {
+          final color = achievements[index]['color'] as Color;
           return Column(
             children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0F0F0),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.shade200, width: 1),
-                ),
-                child: Center(
-                  child: Icon(
-                    achievements[index]['icon'] as IconData,
-                    color: Colors.grey.shade500,
-                    size: 32,
-                  ),
+              GlassContainer(
+                borderRadius: 20,
+                padding: const EdgeInsets.all(16),
+                opacity: 0.08,
+                child: Icon(
+                  achievements[index]['icon'] as IconData,
+                  color: color.withValues(alpha: 0.8),
+                  size: 36,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(
                 achievements[index]['label'] as String,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w500,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -349,112 +374,105 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Widget _buildActivityCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF7F8FA),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.access_time_filled_rounded,
-                color: Color(0xFFFF5277),
-                size: 24,
-              ),
+    return GlassContainer(
+      borderRadius: 28,
+      padding: const EdgeInsets.all(20),
+      opacity: 0.08,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFF5277).withValues(alpha: 0.1),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sarflangan',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                  ),
-                  const Text(
-                    '6 daqiqa',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ],
-              ),
+            child: const Icon(
+              Icons.access_time_filled_rounded,
+              color: Color(0xFFFF5277),
+              size: 28,
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xFFFF951A).withValues(alpha: 0.5),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Sarflangan',
+                  style: TextStyle(
+                    color: AppColors.textSecondary.withValues(alpha: 0.7),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  const Text(
-                    'Haftalik',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                const Text(
+                  '12 daqiqa',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
                   ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 20,
-                    color: Colors.grey.shade500,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          GlassContainer(
+            borderRadius: 16,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            opacity: 0.1,
+            child: Row(
+              children: const [
+                Text(
+                  'Haftalik',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 6),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildMyCourses() {
     return SizedBox(
-      height: 100,
+      height: 110,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         itemCount: 3,
         separatorBuilder: (context, index) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
-          return Container(
-            width: 140,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF7F8FA),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Center(
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: index == 0
-                      ? const Text('🇸🇦', style: TextStyle(fontSize: 20))
-                      : const Icon(
-                          Icons.emoji_events_outlined,
-                          color: Colors.amber,
-                        ),
-                ),
+          return GlassContainer(
+            borderRadius: 24,
+            opacity: 0.08,
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: const BoxDecoration(
+                color: Colors.white10,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: index == 0
+                    ? const Text('🇸🇦', style: TextStyle(fontSize: 24))
+                    : Icon(
+                        Icons.emoji_events_rounded,
+                        color: Colors.amber.withValues(alpha: 0.6),
+                        size: 28,
+                      ),
               ),
             ),
           );

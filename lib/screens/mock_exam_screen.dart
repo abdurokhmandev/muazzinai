@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../config/theme/colors.dart';
-import '../../config/theme/text_styles.dart';
+import '../../widgets/glass_container.dart';
 
 class MockExamScreen extends StatefulWidget {
   const MockExamScreen({super.key});
@@ -13,7 +14,7 @@ class MockExamScreen extends StatefulWidget {
 class _MockExamScreenState extends State<MockExamScreen> {
   int _currentQuestionIndex = 0;
   int _score = 0;
-  int _timeLeft = 60; // 60 seconds per test
+  int _timeLeft = 60;
   Timer? _timer;
   bool _isFinished = false;
 
@@ -76,92 +77,200 @@ class _MockExamScreenState extends State<MockExamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isFinished) {
-      return _buildResultsScreen();
-    }
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: AppColors.darkGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: _isFinished ? _buildResultsScreen() : _buildExamContent(),
+        ),
+      ),
+    );
+  }
 
+  Widget _buildExamContent() {
     final question = _questions[_currentQuestionIndex];
     final progress = (_currentQuestionIndex + 1) / _questions.length;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Mock Exam'),
-        centerTitle: true,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: Text(
-                '00:${_timeLeft.toString().padLeft(2, '0')}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.yellowGold,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                valueColor: const AlwaysStoppedAnimation<Color>(
-                  AppColors.primaryPurple,
-                ),
-                minHeight: 8,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              const SizedBox(height: 32),
-              Text(
-                'Savol ${_currentQuestionIndex + 1} / ${_questions.length}',
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(question['question'] as String, style: AppTextStyles.h2),
-              const SizedBox(height: 48),
-              ...List.generate(
-                (question['options'] as List<String>).length,
-                (index) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: ElevatedButton(
-                    onPressed: () => _answerQuestion(index),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.white,
-                      foregroundColor: AppColors.textPrimary,
-                      padding: const EdgeInsets.all(20),
-                      alignment: Alignment.centerLeft,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(
-                          color: Colors.grey.withValues(alpha: 0.1),
+    return Column(
+      children: [
+        _buildAppBar(),
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      height: 8,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    FractionallySizedBox(
+                      widthFactor: progress,
+                      child: Container(
+                        height: 8,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [AppColors.primaryPurple, AppColors.tealCyan],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryPurple.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                         ),
                       ),
-                      elevation: 0,
                     ),
-                    child: Text(
-                      (question['options'] as List<String>)[index],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                  ],
+                ),
+                const SizedBox(height: 32),
+                Text(
+                  'Savol ${_currentQuestionIndex + 1} / ${_questions.length}'.toUpperCase(),
+                  style: TextStyle(
+                    color: AppColors.textSecondary.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GlassContainer(
+                  borderRadius: 28,
+                  padding: const EdgeInsets.all(28),
+                  opacity: 0.1,
+                  child: Text(
+                    question['question'] as String,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 40),
+                ...List.generate(
+                  (question['options'] as List<String>).length,
+                  (index) => Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: GestureDetector(
+                      onTap: () => _answerQuestion(index),
+                      child: GlassContainer(
+                        borderRadius: 20,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                        opacity: 0.06,
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.textPrimary.withValues(alpha: 0.2),
+                                  width: 2,
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  String.fromCharCode(65 + index),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.textPrimary.withValues(alpha: 0.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Text(
+                                (question['options'] as List<String>)[index],
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 16,
+                              color: AppColors.textSecondary.withValues(alpha: 0.3),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.close_rounded, color: AppColors.textPrimary, size: 28),
+                onPressed: () => context.pop(),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'MOCK IMTIHON',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -0.5,
+                ),
               ),
             ],
           ),
-        ),
+          GlassContainer(
+            borderRadius: 14,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            opacity: 0.1,
+            child: Row(
+              children: [
+                const Icon(Icons.timer_outlined, color: AppColors.yellowGold, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  '${_timeLeft ~/ 60}:${(_timeLeft % 60).toString().padLeft(2, '0')}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.yellowGold,
+                    fontSize: 18,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -169,40 +278,66 @@ class _MockExamScreenState extends State<MockExamScreen> {
   Widget _buildResultsScreen() {
     final double percentage = _score / _questions.length;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Natijalar')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: GlassContainer(
+          borderRadius: 40,
+          padding: const EdgeInsets.all(40),
+          opacity: 0.2,
+          gradient: LinearGradient(
+            colors: [
+              (percentage >= 0.5 ? AppColors.tealCyan : AppColors.primaryPurple).withValues(alpha: 0.3),
+              AppColors.primaryBlue.withValues(alpha: 0.1),
+            ],
+          ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                percentage >= 0.5
-                    ? Icons.emoji_events_rounded
-                    : Icons.sentiment_dissatisfied_rounded,
-                size: 100,
-                color: percentage >= 0.5 ? AppColors.yellowGold : Colors.grey,
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: (percentage >= 0.5 ? AppColors.tealCyan : Colors.redAccent).withValues(alpha: 0.1),
+                ),
+                child: Icon(
+                  percentage >= 0.5 ? Icons.emoji_events_rounded : Icons.sentiment_dissatisfied_rounded,
+                  size: 100,
+                  color: percentage >= 0.5 ? AppColors.yellowGold : Colors.redAccent,
+                ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
               Text(
-                percentage >= 0.5 ? 'Tabriklaymiz!' : 'Yana harakat qiling',
-                style: AppTextStyles.h1,
+                percentage >= 0.5 ? 'TABRIKLAYMIZ!' : 'URINIB KO\'RING',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.5,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
                 'Siz ${_questions.length} ta savoldan $_score tasiga to\'g\'ri javob berdingiz.',
-                style: AppTextStyles.body1,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary.withValues(alpha: 0.8),
+                  height: 1.5,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
               ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => context.pop(),
                 style: ElevatedButton.styleFrom(
-                  minimumSize: const Size.fromHeight(56),
+                  backgroundColor: AppColors.primaryPurple,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(64),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  elevation: 0,
                 ),
-                child: const Text('Bosh sahifaga qaytish'),
+                child: const Text('BOSH SAHIFAGA', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1)),
               ),
               const SizedBox(height: 16),
               TextButton(
@@ -216,10 +351,12 @@ class _MockExamScreenState extends State<MockExamScreen> {
                   _startTimer();
                 },
                 child: const Text(
-                  'Qaytadan urinish',
+                  'QAYTADAN URINISH',
                   style: TextStyle(
-                    color: AppColors.primaryPurple,
-                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                    letterSpacing: 1,
                   ),
                 ),
               ),

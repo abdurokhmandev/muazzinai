@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/app_provider.dart';
 import '../config/theme/colors.dart';
+import '../widgets/glass_container.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -12,34 +13,43 @@ class HomeScreen extends ConsumerWidget {
     final user = ref.watch(appProvider).user;
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(user),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () => context.push('/course'),
-                child: _buildCourseProgress(),
-              ),
-              const SizedBox(height: 20),
-              GestureDetector(
-                onTap: () => context.push('/videos'),
-                child: _buildHeroBanner(),
-              ),
-              const SizedBox(height: 16),
-              _buildGridCards(context),
-              const SizedBox(height: 16),
-              _buildStoryBanner(context),
-              const SizedBox(height: 16),
-              _buildSpeakingMockRow(context),
-              const SizedBox(height: 16),
-              _buildPromoBanner(context),
-              const SizedBox(height: 20),
-            ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: AppColors.darkGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(user),
+                const SizedBox(height: 32),
+                GestureDetector(
+                  onTap: () => context.push('/course'),
+                  child: _buildCourseProgress(),
+                ),
+                const SizedBox(height: 32),
+                GestureDetector(
+                  onTap: () => context.push('/videos'),
+                  child: _buildHeroBanner(),
+                ),
+                const SizedBox(height: 24),
+                _buildGridCards(context),
+                const SizedBox(height: 24),
+                _buildStoryBanner(context),
+                const SizedBox(height: 24),
+                _buildSpeakingMockRow(context),
+                const SizedBox(height: 24),
+                _buildPromoBanner(context),
+                const SizedBox(height: 32),
+              ],
+            ),
           ),
         ),
       ),
@@ -52,64 +62,71 @@ class HomeScreen extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: const BoxDecoration(
-                color: Color(0xFF118A4F),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  user.profileEmoji,
-                  style: const TextStyle(fontSize: 18),
+            GlassContainer(
+              borderRadius: 50,
+              padding: const EdgeInsets.all(4),
+              opacity: 0.15,
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(colors: [Color(0xFF10B981), Color(0xFF059669)]),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    user.profileEmoji,
+                    style: const TextStyle(fontSize: 22),
+                  ),
                 ),
               ),
             ),
+            const SizedBox(width: 8),
             const Icon(
-              Icons.keyboard_arrow_down_rounded,
-              color: Colors.black54,
-              size: 24,
+              Icons.notifications_none_rounded,
+              color: AppColors.textSecondary,
+              size: 28,
             ),
           ],
         ),
-        Row(
-          children: [
-            const Text('🔥', style: TextStyle(fontSize: 22)),
-            const SizedBox(width: 6),
-            Text(
-              '${user.streak}',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(width: 16),
-            if (user.isPro)
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFB512FF), Color(0xFF8B12FF)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Text(
-                  'PRO',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+        GlassContainer(
+          borderRadius: 20,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          opacity: 0.1,
+          child: Row(
+            children: [
+              const Text('🔥', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(
+                '${user.streak}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
                 ),
               ),
-          ],
+              if (user.isPro) ...[
+                const SizedBox(width: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFC084FC), Color(0xFF8B5CF6)],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Text(
+                    'PRO',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );
@@ -122,48 +139,63 @@ class HomeScreen extends ConsumerWidget {
         const Text(
           'Super Arab tili',
           style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-            letterSpacing: -0.2,
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.5,
           ),
         ),
-        const SizedBox(height: 12),
-        Stack(
-          children: [
-            Container(
-              height: 8,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(10),
+        const SizedBox(height: 16),
+        GlassContainer(
+          borderRadius: 16,
+          padding: const EdgeInsets.all(2),
+          opacity: 0.05,
+          child: Stack(
+            children: [
+              Container(
+                height: 10,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-            ),
-            Container(
-              height: 8,
-              width: 60,
-              decoration: BoxDecoration(
-                color: AppColors.darkGray,
-                borderRadius: BorderRadius.circular(10),
+              Container(
+                height: 10,
+                width: 120, // Example progress
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primaryPurple, AppColors.primaryBlue],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryPurple.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
   }
 
   Widget _buildHeroBanner() {
-    return Container(
-      width: double.infinity,
+    return GlassContainer(
+      borderRadius: 32,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF916BFF), Color(0xFF7D4FFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(28),
+      opacity: 0.1,
+      gradient: LinearGradient(
+        colors: [
+          const Color(0xFF8B5CF6).withValues(alpha: 0.3),
+          const Color(0xFF3B82F6).withValues(alpha: 0.3),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -174,8 +206,8 @@ class HomeScreen extends ConsumerWidget {
               Text(
                 "1-bo'lim • 6 ta dars",
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: 16,
+                  color: AppColors.textSecondary.withValues(alpha: 0.9),
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -183,19 +215,26 @@ class HomeScreen extends ConsumerWidget {
               const Text(
                 'Unit 1 Session 1',
                 style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ],
           ),
           Container(
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.white, width: 1),
+              gradient: const LinearGradient(colors: AppColors.primaryGradient),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primaryPurple.withValues(alpha: 0.4),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: const Icon(
               Icons.play_arrow_rounded,
@@ -244,34 +283,34 @@ class HomeScreen extends ConsumerWidget {
     required IconData icon,
     bool hasRotatedBox = false,
   }) {
-    return Container(
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.05)),
-      ),
-      clipBehavior: Clip.antiAlias,
+    return GlassContainer(
+      borderRadius: 32,
+      opacity: 0.08,
       child: Stack(
         children: [
           if (hasRotatedBox)
             Positioned(
-              bottom: -15,
-              right: -10,
+              bottom: -20,
+              right: -20,
               child: Transform.rotate(
-                angle: -0.1,
+                angle: -0.2,
                 child: Container(
-                  width: 110,
-                  height: 110,
+                  width: 120,
+                  height: 120,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF916BFF),
-                    borderRadius: BorderRadius.circular(28),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.primaryPurple.withValues(alpha: 0.2),
+                        AppColors.primaryBlue.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(35),
                   ),
                 ),
               ),
             ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: hasRotatedBox
                   ? CrossAxisAlignment.start
@@ -282,46 +321,43 @@ class HomeScreen extends ConsumerWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF3E8FF),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryPurple.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     icon,
                     color: AppColors.primaryPurple,
-                    size: hasRotatedBox ? 24 : 32,
+                    size: hasRotatedBox ? 28 : 36,
                   ),
                 ),
-                if (hasRotatedBox)
-                  const SizedBox(height: 24)
-                else
-                  const SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Text(
                   title,
                   textAlign: hasRotatedBox ? TextAlign.start : TextAlign.center,
                   style: const TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
                     height: 1.1,
                   ),
                 ),
                 if (hasAction) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Row(
                     children: const [
                       Text(
                         "Ko'rish",
                         style: TextStyle(
-                          color: Colors.black38,
+                          color: AppColors.textSecondary,
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                         ),
                       ),
                       Icon(
-                        Icons.chevron_right,
-                        color: Colors.black38,
-                        size: 18,
+                        Icons.chevron_right_rounded,
+                        color: AppColors.textSecondary,
+                        size: 20,
                       ),
                     ],
                   ),
@@ -368,34 +404,29 @@ class HomeScreen extends ConsumerWidget {
     String? badge,
     bool hasDecoration = false,
   }) {
-    return Container(
-      height: 140,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.05)),
-      ),
-      clipBehavior: Clip.antiAlias,
+    return GlassContainer(
+      borderRadius: 32,
+      opacity: 0.08,
       child: Stack(
         children: [
           if (hasDecoration)
             Positioned(
-              right: -30,
-              bottom: -10,
+              right: -40,
+              bottom: -20,
               child: Container(
-                width: 100,
-                height: 100,
+                width: 120,
+                height: 120,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: const Color(0xFFF3E8FF).withValues(alpha: 0.5),
-                    width: 20,
+                    color: AppColors.primaryPurple.withValues(alpha: 0.05),
+                    width: 25,
                   ),
                 ),
               ),
             ),
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -403,7 +434,7 @@ class HomeScreen extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Icon(icon, color: AppColors.primaryPurple, size: 32),
+                    Icon(icon, color: AppColors.accentCyan, size: 36),
                     if (badge != null)
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -411,27 +442,28 @@ class HomeScreen extends ConsumerWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF3E8FF),
+                          color: AppColors.accentCyan.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           badge,
                           style: const TextStyle(
-                            color: AppColors.primaryPurple,
+                            color: AppColors.accentCyan,
                             fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1,
                           ),
                         ),
                       ),
                   ],
                 ),
+                const SizedBox(height: 24),
                 Text(
                   title,
                   style: const TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
@@ -445,16 +477,15 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildPromoBanner(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/premium'),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFFB512FF), Color(0xFF6B12FF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(32),
+      child: GlassContainer(
+        borderRadius: 32,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        opacity: 0.1,
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFFC084FC).withValues(alpha: 0.4),
+            const Color(0xFF8B5CF6).withValues(alpha: 0.4),
+          ],
         ),
         child: Row(
           children: [
@@ -468,15 +499,15 @@ class HomeScreen extends ConsumerWidget {
                       Icon(
                         Icons.workspace_premium_rounded,
                         color: Colors.white,
-                        size: 28,
+                        size: 32,
                       ),
                       SizedBox(width: 12),
                       Text(
-                        'Ibrat Pro',
+                        'Muazzin Pro',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ],
@@ -485,9 +516,9 @@ class HomeScreen extends ConsumerWidget {
                   Text(
                     'Barcha premium funksiyalar bitta\nobunada',
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 16,
-                      height: 1.3,
+                      height: 1.4,
                     ),
                   ),
                 ],
@@ -496,7 +527,7 @@ class HomeScreen extends ConsumerWidget {
             const Icon(
               Icons.arrow_forward_ios_rounded,
               color: Colors.white,
-              size: 22,
+              size: 24,
             ),
           ],
         ),
@@ -507,26 +538,22 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildStoryBanner(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/story'),
-      child: Container(
-        width: double.infinity,
+      child: GlassContainer(
+        borderRadius: 32,
         padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1E1535),
-          borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-        ),
+        opacity: 0.1,
         child: Row(
           children: [
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF7B4FE0).withValues(alpha: 0.2),
+                color: AppColors.primaryPurple.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.auto_stories_rounded,
-                color: Color(0xFF9D6FFF),
-                size: 28,
+                color: AppColors.primaryPurple,
+                size: 32,
               ),
             ),
             const SizedBox(width: 16),
@@ -537,20 +564,20 @@ class HomeScreen extends ConsumerWidget {
                   Text(
                     'Hikoyalar',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     'Arab tilida qiziqarli hikoyalar',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                    style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: Colors.white38),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.textMuted),
           ],
         ),
       ),

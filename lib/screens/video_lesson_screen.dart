@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme/colors.dart';
-import '../../config/theme/text_styles.dart';
 import '../../providers/courses_provider.dart';
+import '../../widgets/glass_container.dart';
 
 class VideoLessonScreen extends ConsumerWidget {
   const VideoLessonScreen({super.key});
@@ -13,70 +13,171 @@ class VideoLessonScreen extends ConsumerWidget {
     final coursesState = ref.watch(coursesProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Video Darslar'), centerTitle: false),
-      body: coursesState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
-        data: (courses) {
-          if (courses.isEmpty) {
-            return const Center(child: Text('Hozircha darslar yo\'q'));
-          }
-          final course = courses.first; // For simplicity, take the first course
-
-          return ListView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: AppColors.darkGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
             children: [
-              _buildCourseHeader(course.title, course.progress),
-              const SizedBox(height: 24),
-              ...course.lessons.map(
-                (lesson) => _buildLessonCard(context, lesson),
+              _buildAppBar(context),
+              Expanded(
+                child: coursesState.when(
+                  loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primaryPurple)),
+                  error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.white))),
+                  data: (courses) {
+                    if (courses.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'Hozircha darslar yo\'q',
+                          style: TextStyle(color: AppColors.textSecondary),
+                        ),
+                      );
+                    }
+                    final course = courses.first;
+
+                    return ListView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      children: [
+                        _buildCourseHeader(course.title, course.progress),
+                        const SizedBox(height: 32),
+                        const Text(
+                          'Barcha darslar',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ...course.lessons.map(
+                          (lesson) => _buildLessonCard(context, lesson),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
+                    );
+                  },
+                ),
               ),
             ],
-          );
-        },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 22),
+            onPressed: () => context.pop(),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Video Darslar',
+            style: TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildCourseHeader(String title, double progress) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.primaryPurple,
-        borderRadius: BorderRadius.circular(24),
+    return GlassContainer(
+      borderRadius: 32,
+      padding: const EdgeInsets.all(24),
+      opacity: 0.1,
+      gradient: LinearGradient(
+        colors: [
+          AppColors.primaryPurple.withValues(alpha: 0.2),
+          AppColors.primaryBlue.withValues(alpha: 0.1),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTextStyles.h2.copyWith(color: AppColors.white)),
-          const SizedBox(height: 16),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.w900,
+              color: AppColors.textPrimary,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 'Umumiy jarayon',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+                style: TextStyle(
+                  color: AppColors.textSecondary.withValues(alpha: 0.8),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              Text(
-                '${(progress * 100).toInt()}%',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryPurple.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '${(progress * 100).toInt()}%',
+                  style: const TextStyle(
+                    color: AppColors.primaryPurple,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          LinearProgressIndicator(
-            value: progress,
-            backgroundColor: Colors.white.withValues(alpha: 0.2),
-            valueColor: const AlwaysStoppedAnimation<Color>(
-              AppColors.yellowGold,
-            ),
-            minHeight: 8,
-            borderRadius: BorderRadius.circular(4),
+          const SizedBox(height: 12),
+          Stack(
+            children: [
+              Container(
+                height: 10,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.05),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              FractionallySizedBox(
+                widthFactor: progress,
+                child: Container(
+                  height: 10,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primaryPurple, AppColors.primaryBlue],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryPurple.withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -88,53 +189,65 @@ class VideoLessonScreen extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: 16),
       child: GestureDetector(
         onTap: () => context.push('/videos/play/${lesson.id}', extra: lesson),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: lesson.isCompleted
-                    ? AppColors.tealCyan.withValues(alpha: 0.1)
-                    : AppColors.primaryPurple.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                lesson.isCompleted
-                    ? Icons.check_circle_rounded
-                    : Icons.play_arrow_rounded,
-                color: lesson.isCompleted
-                    ? AppColors.tealCyan
-                    : AppColors.primaryPurple,
-              ),
-            ),
-            title: Text(
-              lesson.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                lesson.unitName,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
+        child: GlassContainer(
+          borderRadius: 24,
+          padding: const EdgeInsets.all(16),
+          opacity: 0.06,
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: lesson.isCompleted
+                      ? AppColors.tealCyan.withValues(alpha: 0.15)
+                      : AppColors.primaryPurple.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Icon(
+                    lesson.isCompleted
+                        ? Icons.check_circle_rounded
+                        : Icons.play_circle_filled_rounded,
+                    color: lesson.isCompleted
+                        ? AppColors.tealCyan
+                        : AppColors.primaryPurple,
+                    size: 32,
+                  ),
                 ),
               ),
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      lesson.title,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      lesson.unitName,
+                      style: TextStyle(
+                        color: AppColors.textSecondary.withValues(alpha: 0.7),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textSecondary.withValues(alpha: 0.4),
+                size: 24,
+              ),
+            ],
           ),
         ),
       ),

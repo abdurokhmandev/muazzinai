@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../config/theme/colors.dart';
+import 'glass_container.dart';
 
 class LearningPathWidget extends StatelessWidget {
   const LearningPathWidget({super.key});
@@ -6,10 +8,10 @@ class LearningPathWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      alignment: Alignment.center,
       children: [
-        // Dashed Line Painter (simulated with a simple stack for now)
         CustomPaint(
-          size: const Size(double.infinity, 400),
+          size: const Size(double.infinity, 450),
           painter: DashedPathPainter(),
         ),
         Column(
@@ -20,28 +22,30 @@ class LearningPathWidget extends StatelessWidget {
                 _buildLearningItem(
                   Icons.menu_book_rounded,
                   'Reading',
-                  Colors.teal,
+                  const Color(0xFF10B981),
                 ),
                 _buildLearningItem(
                   Icons.import_contacts_rounded,
                   'Materials',
-                  Colors.teal.shade200,
+                  const Color(0xFF3B82F6),
                 ),
               ],
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 80),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildLearningItem(
                   Icons.headset_rounded,
                   'Audio',
-                  Colors.grey.shade300,
+                  const Color(0xFF8B5CF6).withValues(alpha: 0.5),
+                  isLocked: true,
                 ),
                 _buildLearningItem(
                   Icons.mic_none_rounded,
                   'Speaking',
-                  Colors.grey.shade200,
+                  const Color(0xFFEC4899).withValues(alpha: 0.5),
+                  isLocked: true,
                 ),
               ],
             ),
@@ -51,31 +55,38 @@ class LearningPathWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildLearningItem(IconData icon, String label, Color color) {
+  Widget _buildLearningItem(IconData icon, String label, Color color, {bool isLocked = false}) {
     return Column(
       children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 5),
+        GlassContainer(
+          width: 88,
+          height: 88,
+          borderRadius: 24,
+          padding: const EdgeInsets.all(2),
+          opacity: 0.1,
+          gradient: isLocked 
+            ? null 
+            : LinearGradient(
+                colors: [color.withValues(alpha: 0.4), color.withValues(alpha: 0.1)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-            ],
+          child: Center(
+            child: Icon(
+              isLocked ? Icons.lock_outline_rounded : icon,
+              color: isLocked ? AppColors.textMuted : color,
+              size: 36,
+            ),
           ),
-          child: Icon(icon, color: color.withValues(alpha: 1), size: 40),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         Text(
           label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.black54,
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 14,
+            color: isLocked ? AppColors.textMuted : AppColors.textPrimary,
+            letterSpacing: 0.5,
           ),
         ),
       ],
@@ -87,18 +98,19 @@ class DashedPathPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.teal.withValues(alpha: 0.3)
-      ..strokeWidth = 2
+      ..color = AppColors.primaryPurple.withValues(alpha: 0.15)
+      ..strokeWidth = 3
       ..style = PaintingStyle.stroke;
 
     final path = Path();
-    path.moveTo(size.width * 0.25, 40);
-    path.quadraticBezierTo(size.width * 0.5, 40, size.width * 0.5, 120);
-    path.quadraticBezierTo(size.width * 0.5, 200, size.width * 0.75, 200);
+    path.moveTo(size.width * 0.25, 60);
+    path.quadraticBezierTo(size.width * 0.5, 60, size.width * 0.5, 140);
+    path.quadraticBezierTo(size.width * 0.5, 220, size.width * 0.75, 220);
+    path.quadraticBezierTo(size.width * 0.5, 220, size.width * 0.5, 300);
+    path.quadraticBezierTo(size.width * 0.5, 380, size.width * 0.25, 380);
 
-    // Simple dash effect
-    const dashWidth = 5.0;
-    const dashSpace = 5.0;
+    const dashWidth = 8.0;
+    const dashSpace = 8.0;
     final pathMetrics = path.computeMetrics();
     for (final metric in pathMetrics) {
       var distance = 0.0;

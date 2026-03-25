@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../config/theme/colors.dart';
-import '../../config/theme/text_styles.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/auth_service.dart';
+import '../../widgets/glass_container.dart';
 
-/// Phone + Password login screen.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -59,7 +58,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         content: Text(message),
         backgroundColor: Colors.redAccent,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );
   }
@@ -67,150 +66,222 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 40),
-                // ── App Icon ──
-                const Icon(
-                  Icons.language_rounded,
-                  size: 80,
-                  color: AppColors.primaryPurple,
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Xush kelibsiz!',
-                  style: AppTextStyles.h1,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Super Arab tili orqali arab tilini o\'rganing',
-                  style: AppTextStyles.body1,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-
-                // ── Phone Number Field ──
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    hintText: '+998 90 123 45 67',
-                    labelText: 'Telefon raqam',
-                    prefixIcon: const Icon(Icons.phone_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: AppColors.white,
-                  ),
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[\d\+\s\-]')),
-                  ],
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Telefon raqam kiriting';
-                    }
-                    if (!AuthService.isValidPhone(value.trim())) {
-                      return '+998XXXXXXXXX formatida kiriting';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // ── Password Field ──
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    hintText: 'Parol',
-                    labelText: 'Parol',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: AppColors.darkGradient,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(32.0),
+              physics: const BouncingScrollPhysics(),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildLogo(),
+                    const SizedBox(height: 48),
+                    const Text(
+                      'Xush kelibsiz!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -1,
                       ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      borderSide: BorderSide.none,
+                    const SizedBox(height: 12),
+                    Text(
+                      'Muazzin bilan arab tilini o\'rganing',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.textSecondary.withValues(alpha: 0.7),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    filled: true,
-                    fillColor: AppColors.white,
-                  ),
-                  obscureText: _obscurePassword,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Parol kiriting';
-                    }
-                    return null;
-                  },
+                    const SizedBox(height: 60),
+                    _buildInputField(
+                      controller: _phoneController,
+                      hint: '+998 90 123 45 67',
+                      label: 'Telefon raqam',
+                      icon: Icons.phone_android_rounded,
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Telefon raqam kiriting';
+                        }
+                        if (!AuthService.isValidPhone(value.trim())) {
+                          return '+998XXXXXXXXX formatida kiriting';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    _buildInputField(
+                      controller: _passwordController,
+                      hint: 'Parol',
+                      label: 'Parol',
+                      icon: Icons.lock_outline_rounded,
+                      isPassword: true,
+                      obscureText: _obscurePassword,
+                      onToggleVisibility: () => setState(() => _obscurePassword = !_obscurePassword),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Parol kiriting';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 40),
+                    _buildLoginButton(),
+                    const SizedBox(height: 32),
+                    _buildSignUpLink(),
+                  ],
                 ),
-                const SizedBox(height: 24),
-
-                // ── Login Button ──
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _login,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryPurple,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2.5,
-                          ),
-                        )
-                      : const Text(
-                          'Kirish',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                ),
-                const SizedBox(height: 24),
-
-                // ── Sign Up Link ──
-                TextButton(
-                  onPressed: () => context.push('/signup'),
-                  child: RichText(
-                    text: const TextSpan(
-                      text: 'Akkauntingiz yo\'qmi? ',
-                      style: TextStyle(color: AppColors.textSecondary),
-                      children: [
-                        TextSpan(
-                          text: 'Ro\'yxatdan o\'tish',
-                          style: TextStyle(
-                            color: AppColors.primaryPurple,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogo() {
+    return Center(
+      child: GlassContainer(
+        width: 100,
+        height: 100,
+        borderRadius: 30,
+        opacity: 0.2,
+        child: const Center(
+          child: Icon(
+            Icons.language_rounded,
+            size: 60,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputField({
+    required TextEditingController controller,
+    required String hint,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+    bool obscureText = false,
+    VoidCallback? onToggleVisibility,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 10, bottom: 8),
+          child: Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              fontSize: 12,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1,
+            ),
+          ),
+        ),
+        GlassContainer(
+          borderRadius: 20,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          opacity: 0.08,
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            keyboardType: keyboardType,
+            style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.3)),
+              prefixIcon: Icon(icon, color: AppColors.textSecondary.withValues(alpha: 0.6), size: 22),
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        obscureText ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                        color: AppColors.textSecondary.withValues(alpha: 0.6),
+                        size: 22,
+                      ),
+                      onPressed: onToggleVisibility,
+                    )
+                  : null,
+              border: InputBorder.none,
+            ),
+            validator: validator,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginButton() {
+    return GestureDetector(
+      onTap: _isLoading ? null : _login,
+      child: Container(
+        height: 64,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(
+            colors: [AppColors.primaryPurple, AppColors.primaryBlue],
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryPurple.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Center(
+          child: _isLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Text(
+                  'KIRISH',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 2,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignUpLink() {
+    return Center(
+      child: TextButton(
+        onPressed: () => context.push('/signup'),
+        child: RichText(
+          text: TextSpan(
+            text: 'Akkauntingiz yo\'qmi? ',
+            style: TextStyle(color: AppColors.textSecondary.withValues(alpha: 0.7), fontWeight: FontWeight.w500),
+            children: const [
+              TextSpan(
+                text: 'Ro\'yxatdan o\'tish',
+                style: TextStyle(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
           ),
         ),
       ),

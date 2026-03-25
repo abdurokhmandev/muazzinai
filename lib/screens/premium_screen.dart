@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../payment/payment_method_screen.dart';
+import '../config/theme/colors.dart';
+import '../widgets/glass_container.dart';
 
 class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
@@ -13,7 +16,6 @@ class _PremiumScreenState extends State<PremiumScreen>
   int _selectedPlan = 0;
   late AnimationController _floatController;
   late AnimationController _glowController;
-  late AnimationController _shimmerController;
   late Animation<double> _floatAnimation;
   late Animation<double> _glowAnimation;
 
@@ -26,7 +28,7 @@ class _PremiumScreenState extends State<PremiumScreen>
       vsync: this,
     )..repeat(reverse: true);
 
-    _floatAnimation = Tween<double>(begin: -8.0, end: 8.0).animate(
+    _floatAnimation = Tween<double>(begin: -10.0, end: 10.0).animate(
       CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
     );
 
@@ -35,21 +37,15 @@ class _PremiumScreenState extends State<PremiumScreen>
       vsync: this,
     )..repeat(reverse: true);
 
-    _glowAnimation = Tween<double>(begin: 0.3, end: 0.8).animate(
+    _glowAnimation = Tween<double>(begin: 0.2, end: 0.6).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
-
-    _shimmerController = AnimationController(
-      duration: const Duration(milliseconds: 2500),
-      vsync: this,
-    )..repeat();
   }
 
   @override
   void dispose() {
     _floatController.dispose();
     _glowController.dispose();
-    _shimmerController.dispose();
     super.dispose();
   }
 
@@ -61,35 +57,35 @@ class _PremiumScreenState extends State<PremiumScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0F0C29),
-              Color(0xFF302B63),
-              Color(0xFF24243E),
-            ],
+            colors: AppColors.darkGradient,
           ),
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                children: [
-                  _buildAppBar(),
-                  const SizedBox(height: 16),
-                  _build3DCrownSection(),
-                  const SizedBox(height: 24),
-                  _buildTitleSection(),
-                  const SizedBox(height: 28),
-                  _buildFeatureCards(),
-                  const SizedBox(height: 28),
-                  _buildPlanSelector(),
-                  const SizedBox(height: 28),
-                  _buildPaymentButtons(),
-                  const SizedBox(height: 40),
-                ],
+          child: Column(
+            children: [
+              _buildAppBar(),
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      _build3DCrownSection(),
+                      const SizedBox(height: 32),
+                      _buildTitleSection(),
+                      const SizedBox(height: 48),
+                      _buildFeatureCards(),
+                      const SizedBox(height: 48),
+                      _buildPlanSelector(),
+                      const SizedBox(height: 48),
+                      _buildPaymentButtons(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -98,50 +94,25 @@ class _PremiumScreenState extends State<PremiumScreen>
 
   Widget _buildAppBar() {
     return Padding(
-      padding: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildGlassButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => Navigator.of(context).pop(),
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 22),
+            onPressed: () => context.pop(),
           ),
-          const Spacer(),
           const Text(
-            'PRO',
+            'MUAZZIN PRO',
             style: TextStyle(
-              color: Color(0xFFFFD700),
-              fontSize: 20,
+              color: AppColors.yellowGold,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
               letterSpacing: 4,
             ),
           ),
-          const Spacer(),
-          _buildGlassButton(
-            icon: Icons.info_outline_rounded,
-            onTap: () {},
-          ),
+          const SizedBox(width: 48),
         ],
-      ),
-    );
-  }
-
-  Widget _buildGlassButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: Colors.white.withValues(alpha: 0.15),
-          ),
-        ),
-        child: Icon(icon, color: Colors.white70, size: 20),
       ),
     );
   }
@@ -152,38 +123,25 @@ class _PremiumScreenState extends State<PremiumScreen>
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _floatAnimation.value),
-          child: Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.001)
-              ..rotateX(_floatAnimation.value * 0.01)
-              ..rotateY(_floatAnimation.value * 0.008),
+          child: Center(
             child: Container(
-              width: 140,
-              height: 140,
+              width: 180,
+              height: 180,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    const Color(0xFFFFD700).withValues(alpha: _glowAnimation.value),
-                    const Color(0xFFFF8C00).withValues(alpha: 0.3),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFFFD700)
-                        .withValues(alpha: _glowAnimation.value * 0.4),
+                    color: AppColors.yellowGold.withValues(alpha: 0.4 * _glowAnimation.value),
                     blurRadius: 60,
-                    spreadRadius: 20,
+                    spreadRadius: 10,
                   ),
                 ],
               ),
-              child: const Center(
-                child: Text(
-                  '👑',
-                  style: TextStyle(fontSize: 64),
+              child: GlassContainer(
+                borderRadius: 90,
+                opacity: 0.1,
+                child: const Center(
+                  child: Text('👑', style: TextStyle(fontSize: 80)),
                 ),
               ),
             ),
@@ -196,31 +154,23 @@ class _PremiumScreenState extends State<PremiumScreen>
   Widget _buildTitleSection() {
     return Column(
       children: [
-        ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [
-              Color(0xFFFFD700),
-              Color(0xFFFFA500),
-              Color(0xFFFFD700),
-            ],
-          ).createShader(bounds),
-          child: const Text(
-            'Ibrat Pro',
-            style: TextStyle(
-              fontSize: 34,
-              fontWeight: FontWeight.w900,
-              color: Colors.white,
-              letterSpacing: 1,
-            ),
+        const Text(
+          'Cheksiz Imkoniyatlar',
+          style: TextStyle(
+            fontSize: 34,
+            fontWeight: FontWeight.w900,
+            color: AppColors.textPrimary,
+            letterSpacing: -1,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         Text(
-          'Barcha premium funksiyalarga\ncheksiz kirish huquqini oling',
+          'A’zo bo‘ling va barcha premium\nfunksiyalardan foydalaning',
           textAlign: TextAlign.center,
           style: TextStyle(
-            fontSize: 15,
-            color: Colors.white.withValues(alpha: 0.7),
+            fontSize: 16,
+            color: AppColors.textSecondary.withValues(alpha: 0.6),
+            fontWeight: FontWeight.w500,
             height: 1.5,
           ),
         ),
@@ -230,73 +180,59 @@ class _PremiumScreenState extends State<PremiumScreen>
 
   Widget _buildFeatureCards() {
     final features = [
-      _FeatureData(Icons.play_circle_rounded, 'Cheksiz Video Darslar',
-          'Barcha video darslarga kirish', const Color(0xFF7C3AED)),
-      _FeatureData(Icons.wifi_off_rounded, 'Offline Rejim',
-          'Internet holda o\'rganish', const Color(0xFF14B8A6)),
-      _FeatureData(Icons.block_rounded, 'Reklama Yo\'q',
-          'Toza va silliq interfeys', const Color(0xFFEF4444)),
-      _FeatureData(Icons.record_voice_over_rounded, 'Ovozli Lug\'at',
-          'Talaffuz va tahlillar', const Color(0xFFF59E0B)),
+      _FeatureData(Icons.play_circle_filled_rounded, 'Cheksiz Darslar', 'Barcha videolarga kirish', AppColors.primaryPurple),
+      _FeatureData(Icons.offline_bolt_rounded, 'Offline Rejim', 'Internet holda o\'rganish', AppColors.tealCyan),
+      _FeatureData(Icons.verified_user_rounded, 'Ekspert Qo\'llovi', 'Ustozlar bilan jonli muloqot', AppColors.primaryBlue),
     ];
 
-    return Column(
-      children: features.map((f) => _buildFeatureCard(f)).toList(),
-    );
+    return Column(children: features.map((f) => _buildFeatureCard(f)).toList());
   }
 
   Widget _buildFeatureCard(_FeatureData feature) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GlassContainer(
+        borderRadius: 24,
+        padding: const EdgeInsets.all(20),
+        opacity: 0.08,
+        child: Row(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: feature.color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(feature.icon, color: feature.color, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    feature.title,
+                    style: const TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    feature.subtitle,
+                    style: TextStyle(
+                      color: AppColors.textSecondary.withValues(alpha: 0.6),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: feature.color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(feature.icon, color: feature.color, size: 24),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  feature.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  feature.subtitle,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.check_circle_rounded,
-            color: feature.color.withValues(alpha: 0.7),
-            size: 22,
-          ),
-        ],
       ),
     );
   }
@@ -304,21 +240,9 @@ class _PremiumScreenState extends State<PremiumScreen>
   Widget _buildPlanSelector() {
     return Column(
       children: [
-        _buildPlanOption(
-          title: 'Oylik',
-          price: '\$9.99',
-          period: '/oy',
-          index: 0,
-          badge: null,
-        ),
-        const SizedBox(height: 12),
-        _buildPlanOption(
-          title: 'Yillik',
-          price: '\$79.99',
-          period: '/yil',
-          index: 1,
-          badge: '-20%',
-        ),
+        _buildPlanOption(title: 'Oylik Obuna', price: '\$9.99', period: '/oy', index: 0),
+        const SizedBox(height: 16),
+        _buildPlanOption(title: 'Yillik Obuna', price: '\$79.99', period: '/yil', index: 1, badge: 'SAVE 30%'),
       ],
     );
   }
@@ -334,122 +258,64 @@ class _PremiumScreenState extends State<PremiumScreen>
 
     return GestureDetector(
       onTap: () => setState(() => _selectedPlan = index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-                  colors: [
-                    Color(0xFF7C3AED),
-                    Color(0xFF6D28D9),
-                  ],
-                )
-              : null,
-          color: isSelected ? null : Colors.white.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFFFFD700).withValues(alpha: 0.6)
-                : Colors.white.withValues(alpha: 0.1),
-            width: isSelected ? 2 : 1,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF7C3AED).withValues(alpha: 0.4),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
+      child: GlassContainer(
+        borderRadius: 24,
+        padding: const EdgeInsets.all(24),
+        opacity: isSelected ? 0.2 : 0.05,
+        border: Border.all(
+          color: isSelected ? AppColors.yellowGold : Colors.white.withValues(alpha: 0.1),
+          width: isSelected ? 2 : 1,
         ),
+        gradient: isSelected
+            ? const LinearGradient(colors: [AppColors.primaryPurple, AppColors.primaryBlue])
+            : null,
         child: Row(
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected
-                    ? const Color(0xFFFFD700)
-                    : Colors.white.withValues(alpha: 0.15),
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFFFFD700)
-                      : Colors.white.withValues(alpha: 0.3),
-                  width: 2,
-                ),
-              ),
-              child: isSelected
-                  ? const Icon(Icons.check_rounded,
-                      size: 16, color: Color(0xFF1F0741))
-                  : null,
-            ),
-            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.white70,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
+                  if (badge != null)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.yellowGold,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      if (badge != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFD700),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            badge,
-                            style: const TextStyle(
-                              color: Color(0xFF1F0741),
-                              fontSize: 11,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
+                      child: Text(
+                        badge,
+                        style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 10),
+                      ),
+                    ),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ],
               ),
             ),
-            Row(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
                   price,
                   style: TextStyle(
-                    color: isSelected
-                        ? const Color(0xFFFFD700)
-                        : Colors.white,
-                    fontSize: 22,
+                    color: isSelected ? Colors.white : AppColors.yellowGold,
+                    fontSize: 24,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 2),
-                  child: Text(
-                    period,
-                    style: TextStyle(
-                      color: isSelected
-                          ? Colors.white70
-                          : Colors.white.withValues(alpha: 0.5),
-                      fontSize: 13,
-                    ),
+                Text(
+                  period,
+                  style: TextStyle(
+                    color: isSelected ? Colors.white.withValues(alpha: 0.7) : AppColors.textSecondary.withValues(alpha: 0.5),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
@@ -461,76 +327,45 @@ class _PremiumScreenState extends State<PremiumScreen>
   }
 
   Widget _buildPaymentButtons() {
-    return Column(
-      children: [
-        // Card Payment Button
-        _buildPaymentActionButton(
-          icon: Icons.credit_card_rounded,
-          label: 'Karta bilan to\'lash',
-          gradient: const [Color(0xFF7C3AED), Color(0xFF5B21B6)],
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PaymentMethodScreen(
-                  plan: _selectedPlan == 0 ? 'monthly' : 'yearly',
-                  price: _selectedPlan == 0 ? '\$9.99' : '\$79.99',
-                ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 14),
-        // Cash Payment Button
-        
-      ],
-    );
-  }
-
-  Widget _buildPaymentActionButton({
-    required IconData icon,
-    required String label,
-    required List<Color> gradient,
-    required VoidCallback onTap,
-  }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PaymentMethodScreen(
+              plan: _selectedPlan == 0 ? 'monthly' : 'yearly',
+              price: _selectedPlan == 0 ? '\$9.99' : '\$79.99',
+            ),
+          ),
+        );
+      },
       child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18),
+        height: 64,
         decoration: BoxDecoration(
-          gradient: LinearGradient(colors: gradient),
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(24),
+          gradient: const LinearGradient(colors: [AppColors.yellowGold, Color(0xFFFFA500)]),
           boxShadow: [
             BoxShadow(
-              color: gradient[0].withValues(alpha: 0.4),
+              color: AppColors.yellowGold.withValues(alpha: 0.3),
               blurRadius: 20,
-              offset: const Offset(0, 8),
+              offset: const Offset(0, 10),
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white, size: 24),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-              ),
+        child: const Center(
+          child: Text(
+            'OBUNA BO‘LISH',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2,
             ),
-          ],
+          ),
         ),
       ),
     );
   }
-
-
-
 }
 
 class _FeatureData {

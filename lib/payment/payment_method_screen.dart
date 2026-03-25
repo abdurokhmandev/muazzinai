@@ -88,8 +88,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
           content: const Text('Iltimos, to\'lov kartasini tanlang'),
           backgroundColor: Colors.red.shade400,
           behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
       return;
@@ -119,9 +120,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
               colors: [Color(0xFF1E1B4B), Color(0xFF312E81)],
             ),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.15),
-            ),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -150,7 +149,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
               ),
               const SizedBox(height: 12),
               Text(
-                'Siz Ibrat Pro obunasini\nmuvaffaqiyatli xarid qildingiz!',
+                'Siz Muazzin Pro obunasini\nmuvaffaqiyatli xarid qildingiz!',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
@@ -200,11 +199,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0F0C29),
-              Color(0xFF302B63),
-              Color(0xFF24243E),
-            ],
+            colors: [Color(0xFF0F0C29), Color(0xFF302B63), Color(0xFF24243E)],
           ),
         ),
         child: SafeArea(
@@ -253,11 +248,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.15)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
               ),
-              child: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white70, size: 20),
+              child: const Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: Colors.white70,
+                size: 20,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -302,8 +299,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
               color: const Color(0xFFFFD700).withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(14),
             ),
-            child:
-                const Icon(Icons.star_rounded, color: Color(0xFFFFD700), size: 28),
+            child: const Icon(
+              Icons.star_rounded,
+              color: Color(0xFFFFD700),
+              size: 28,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -311,7 +311,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Ibrat Pro — $planName',
+                  'Muazzin Pro — $planName',
                   style: const TextStyle(
                     color: Color(0xFFFFD700),
                     fontSize: 15,
@@ -449,8 +449,9 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
                                 width: 40,
                                 height: 28,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFFFD700)
-                                      .withValues(alpha: 0.8),
+                                  color: const Color(
+                                    0xFFFFD700,
+                                  ).withValues(alpha: 0.8),
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                               ),
@@ -510,8 +511,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
                             color: Color(0xFFFFD700),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.check_rounded,
-                              size: 14, color: Color(0xFF1F0741)),
+                          child: const Icon(
+                            Icons.check_rounded,
+                            size: 14,
+                            color: Color(0xFF1F0741),
+                          ),
                         ),
                       ),
                     Positioned(
@@ -525,8 +529,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
                             color: Colors.black.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.delete_outline_rounded,
-                              size: 18, color: Colors.white70),
+                          child: const Icon(
+                            Icons.delete_outline_rounded,
+                            size: 18,
+                            color: Colors.white70,
+                          ),
                         ),
                       ),
                     ),
@@ -567,8 +574,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
                   color: const Color(0xFF7C3AED).withValues(alpha: 0.4),
                 ),
               ),
-              child: const Icon(Icons.add_rounded,
-                  color: Color(0xFF7C3AED), size: 28),
+              child: const Icon(
+                Icons.add_rounded,
+                color: Color(0xFF7C3AED),
+                size: 28,
+              ),
             ),
             const SizedBox(height: 12),
             Text(
@@ -620,8 +630,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen>
             ),
 
             if (_selectedCardIndex == -2)
-              const Icon(Icons.check_circle_rounded,
-                  color: Color(0xFF14B8A6), size: 24),
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Color(0xFF14B8A6),
+                size: 24,
+              ),
           ],
         ),
       ),

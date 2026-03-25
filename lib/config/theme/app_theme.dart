@@ -6,14 +6,15 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      brightness: Brightness.dark, // Modern 2026 style is dark by default
       primaryColor: AppColors.primaryPurple,
       scaffoldBackgroundColor: AppColors.background,
       fontFamily: AppTextStyles.fontFamily,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primaryPurple,
+      colorScheme: ColorScheme.dark(
         primary: AppColors.primaryPurple,
-        secondary: AppColors.tealCyan,
-        surface: AppColors.white,
+        secondary: AppColors.primaryBlue,
+        tertiary: AppColors.accentCyan,
+        surface: AppColors.surface,
         error: Colors.redAccent,
       ),
       appBarTheme: const AppBarTheme(
@@ -32,23 +33,23 @@ class AppTheme {
           backgroundColor: AppColors.primaryPurple,
           foregroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 28),
           textStyle: AppTextStyles.button,
           elevation: 0,
         ),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.white,
+        color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: Colors.grey.withValues(alpha: 0.05)),
+          side: BorderSide(color: AppColors.glassBorder),
         ),
       ),
       dividerTheme: DividerThemeData(
-        color: Colors.grey.withValues(alpha: 0.1),
+        color: AppColors.glassBorder,
         thickness: 1,
       ),
     );
