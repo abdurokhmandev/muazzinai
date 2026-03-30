@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/app_provider.dart';
+import '../providers/auth_provider.dart';
 import '../config/theme/colors.dart';
 import '../widgets/glass_container.dart';
 
@@ -46,6 +48,8 @@ class ProfileScreen extends ConsumerWidget {
                       _buildSectionHeader('Kurslarim'),
                       const SizedBox(height: 16),
                       _buildMyCourses(),
+                      const SizedBox(height: 32),
+                      _buildLogoutButton(context, ref),
                       const SizedBox(height: 40),
                     ],
                   ),
@@ -477,6 +481,66 @@ class ProfileScreen extends ConsumerWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
+    return GlassContainer(
+      borderRadius: 24,
+      padding: const EdgeInsets.all(2),
+      opacity: 0.1,
+      gradient: LinearGradient(
+        colors: [
+          Colors.redAccent.withValues(alpha: 0.3),
+          Colors.red.withValues(alpha: 0.3),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: () async {
+          final confirm = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: AppColors.surface,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              title: const Text('Chiqish', style: TextStyle(color: AppColors.textPrimary)),
+              content: const Text('Haqiqatan ham hisobdan chiqmoqchimisiz?',
+                  style: TextStyle(color: AppColors.textSecondary)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('Bekor qilish', style: TextStyle(color: AppColors.textSecondary)),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: const Text('Chiqish', style: TextStyle(color: Colors.redAccent)),
+                ),
+              ],
+            ),
+          );
+
+          if (confirm == true) {
+            await ref.read(userProvider.notifier).logout();
+            if (context.mounted) {
+              context.go('/login');
+            }
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          minimumSize: const Size.fromHeight(60),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        ),
+        child: const Text(
+          'CHIQISH',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1,
+          ),
+        ),
       ),
     );
   }
