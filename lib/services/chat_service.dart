@@ -43,6 +43,8 @@ class ChatService {
   }
 
   void dispose() {
-    _chatController.close();
+    _chatController.close(
+      
+    );
   }
 }

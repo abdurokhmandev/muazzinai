@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-import 'package:lottie/lottie.dart';
+
 import '../../models/lesson_model.dart';
 import '../../config/theme/colors.dart';
 import '../../config/theme/text_styles.dart';
@@ -20,7 +20,7 @@ class VideoPlayerScreen extends ConsumerStatefulWidget {
 class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
   late YoutubePlayerController _controller;
   bool _isCompleted = false;
-  bool _showCelebration = false;
+
 
 
   @override
@@ -37,6 +37,7 @@ class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
         showControls: true,
         showFullscreenButton: true,
         mute: false,
+        origin: 'https://www.youtube.com',
       ),
     );
 
@@ -56,21 +57,7 @@ class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
 
     setState(() {
       _isCompleted = true;
-      if (widget.lesson.id == 'l1') {
-        _showCelebration = true;
-      }
     });
-
-    if (_showCelebration) {
-      Future.delayed(const Duration(seconds: 4), () {
-        if (mounted) {
-          setState(() {
-            _showCelebration = false;
-          });
-        }
-      });
-    }
-
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -203,53 +190,9 @@ class _VideoPlayerScreenState extends ConsumerState<VideoPlayerScreen> {
                 ],
               ),
             ),
-            if (_showCelebration)
-              Positioned.fill(
-                child: IgnorePointer(
-                  child: Lottie.network(
-                    'https://assets9.lottiefiles.com/packages/lf20_77bw8pqc.json', // Fireworks Lottie
-                    repeat: false,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            if (_showCelebration)
-              const Center(
-                child: IgnorePointer(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'TABRIKLAYMIZ!',
-                        style: TextStyle(
-                          color: AppColors.yellowGold,
-                          fontSize: 40,
-                          fontWeight: FontWeight.w900,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black54,
-                              blurRadius: 10,
-                              offset: Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        'Birinchi darsni muvaffaqiyatli tugatdingiz',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
           ],
         );
       },
-
     );
   }
 
